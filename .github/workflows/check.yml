@@ -9,7 +9,6 @@ on:
     pull_request:
     # Trigger workflow every day to create/update caches for other builds
     # See https://docs.github.com/en/actions/guides/caching-dependencies-to-speed-up-workflows#restrictions-for-accessing-a-cache
-    # to get more details about cache access
     schedule:
         -   cron: '0 3 * * *'
 
