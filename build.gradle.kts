@@ -434,6 +434,13 @@ project(":idea") {
         implementation(project(":"))
         testImplementation(project(":", "testOutput"))
     }
+    tasks {
+        test {
+            // Temporarily disable tests 2021.3 platform in CLion.
+            // They fail because of incompatibility between the latest 2021.3 IDEA and CLion snapshots
+            enabled = baseIDE != "clion" || platformVersion != 213
+        }
+    }
 }
 
 project(":clion") {
@@ -502,6 +509,13 @@ project(":copyright") {
         implementation(project(":"))
         testImplementation(project(":", "testOutput"))
     }
+    tasks {
+        test {
+            // Temporarily disable tests with copyright plugin integration on 2021.3 platform in CLion.
+            // They fail because of incompatibility between the latest 2021.3 IDEA and CLion snapshots
+            enabled = baseIDE != "clion" || platformVersion != 213
+        }
+    }
 }
 
 project(":duplicates") {
@@ -550,8 +564,6 @@ project(":ml-completion") {
 }
 
 task("runPrettyPrintersTests") {
-    // https://github.com/intellij-rust/intellij-rust/issues/8028
-    enabled = platformVersion < 213 || !isFamily(FAMILY_UNIX)
     doLast {
         val lldbPath = when {
             // TODO: Use `lldb` Python module from CLion distribution
