@@ -106,7 +106,7 @@ jobs:
             # `fromJSON` is used here to convert string output to boolean
             fail-fast: ${{ fromJSON(needs.calculate-git-info.outputs.is_bors_branch) }}
             matrix:
-                os: [ windows-2019 ]
+                os: [ windows-2022 ]
                 wsl-distribution: [ Ubuntu-18.04 ]
                 rust-version: [ 1.56.1 ]
                 base-ide: [ idea ]
