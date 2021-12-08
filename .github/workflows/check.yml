@@ -3,12 +3,6 @@ name: check
 on:
   push:
 
-# Allow cancelling all previous runs for the same branch
-# See https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#concurrency
-concurrency:
-    group: ${{ github.workflow }}-${{ github.ref }}
-    cancel-in-progress: true
-
 jobs:
     calculate-git-info:
         runs-on: ubuntu-18.04
@@ -124,17 +118,6 @@ jobs:
                   distribution: ${{ matrix.wsl-distribution }}
                   additional-packages: cargo
 
-#            - name: Set up WSL 2
-#              run: |
-#                  C:\hostedtoolcache\windows\Ubuntu\18.4.0\x64\ubuntu1804.exe config --default-user test
-
-#            - name: Set up WSL Rust
-#              shell: wsl-bash {0}
-#              run: |
-#                  curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain none
-#                  source $HOME/.cargo/env
-#                  rustup toolchain install nightly --allow-downgrade --profile minimal
-
             - name: Check environment
               shell: bash
               run: |
@@ -142,53 +125,4 @@ jobs:
                   rustc --version
                   which cargo
                   cargo install --list
-            - name: Set up WSL env variables
-              shell: pwsh
-              run: echo "CI_WSL_DISTRO=${{ matrix.wsl-distribution }}" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
-            - name: Load linux binaries
-              uses: actions/download-artifact@v2
-              with:
-                  name: linux-x86-64
-                  path: bin/linux/x86-64
-
-            - name: Download
-              uses: gradle/gradle-build-action@v1
-              with:
-                  arguments: ":resolveDependencies -Pkotlin.incremental=false --no-daemon"
-
-            - name: Build
-              uses: gradle/gradle-build-action@v1
-              with:
-                  arguments: "assemble testClasses -Pkotlin.incremental=false --no-daemon"
-
-            - name: Check
-              uses: gradle/gradle-build-action@v1
-              with:
-                  arguments: "check -PexcludeTests=org/rustPerformanceTests/** --continue -Pkotlin.incremental=false --no-daemon"
-
-            - name: Collect fail reports
-              if: failure()
-              uses: actions/upload-artifact@v2
-              with:
-                  name: tests-report-${{ matrix.os }}-${{ matrix.rust-version }}-${{ matrix.base-ide }}-${{ matrix.platform-version }}
-                  path: |
-                      build/reports/tests
-                      */build/reports/tests
-            - name: Verify plugin
-              if: matrix.verify-plugin
-              uses: gradle/gradle-build-action@v1
-              with:
-                  arguments: ":plugin:verifyPlugin"
-
-            - name: Check bundled Rust formatters
-              uses: gradle/gradle-build-action@v1
-              with:
-                  arguments: "runPrettyPrintersTests --no-daemon"
-
-    check:
-        needs: [ check-plugin ]
-        runs-on: ubuntu-18.04
-        steps:
-            - name: Finish check
-              run: echo "Check finished successfully!"
