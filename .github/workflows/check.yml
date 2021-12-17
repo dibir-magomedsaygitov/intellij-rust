@@ -11,7 +11,7 @@ jobs:
             - name: Test readlink openssl
               run: |
                 readlink /usr/local/opt/openssl
-                OPENSSL_ROOT_DIR=$(readlink /usr/local/opt/openssl
+                OPENSSL_ROOT_DIR=$(readlink /usr/local/opt/openssl)
                 echo $OPENSSL_ROOT_DIR
         
                   
