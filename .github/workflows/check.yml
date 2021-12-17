@@ -8,7 +8,7 @@ jobs:
         runs-on: macos-10.15
         steps:
             - uses: actions/checkout@v2
-            - name: Calculate git info
+            - name: Test readlink openssl
               run: |
                 readlink /usr/local/opt/openssl
                 OPENSSL_ROOT_DIR=$(readlink /usr/local/opt/openssl)
